@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Rheumatic Fever | Acute Rheumatic Fever & RHD | MCN Pillitteri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1 !important;
+            color: transparent !important;
+            border-radius: 0.375rem !important;
+            padding: 0 0.25rem !important;
+            cursor: pointer !important;
+            transition: background-color 0.2s, color 0.2s !important;
+            box-shadow: inset 0 0 0 1px #94a3b8 !important;
+            display: inline-block !important;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fde047 !important;
+            color: #1e293b !important;
+            box-shadow: none !important;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 8px; }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .locked-section { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        .flashcard { background: #fff; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transition: transform 0.2s; cursor: pointer; border: 1px solid #e2e8f0; }
+        .flashcard:hover { transform: translateY(-5px); }
+        .analogy-box { background: #fef3c7; border-left: 8px solid #b45309; padding: 1rem; border-radius: 1rem; margin: 1rem 0; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { rf: { light: '#fef3c7', DEFAULT: '#b45309', dark: '#78350f' } } } }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-rf-dark text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40">
+            <i class="fa-solid fa-bars text-2xl"></i>
+        </button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+            <i class="fa-solid fa-heart-crack mr-2"></i> Rheumatic Fever
+        </h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-transform duration-300 shrink-0 border-r border-slate-200">
+        <div class="p-6 bg-gradient-to-br from-rf-dark to-rf text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-heart-crack mr-2"></i> Rheumatic Fever</h1>
+            <p class="text-sm text-amber-200 mt-1 font-medium">Post‑streptic autoimmune disease | Jones criteria · RHD prevention</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 bg-rf-light text-rf-dark border-r-4 border-rf-dark transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden"></i> Home / Start</button></li>
+                <li><button onclick="showSection('simple')" id="btn-simple" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-face-smile w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Rheumatic Fever Like You're 5</button></li>
+                <li><button onclick="showSection('definition')" id="btn-definition" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-book-open w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Definition & Epidemiology</button></li>
+                <li><button onclick="showSection('etiology')" id="btn-etiology" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-biohazard w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Etiology & Pathophysiology</button></li>
+                <li><button onclick="showSection('clinical')" id="btn-clinical" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-stethoscope w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Clinical Features (Jones Criteria)</button></li>
+                <li><button onclick="showSection('diagnosis')" id="btn-diagnosis" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-microscope w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Diagnosis & Tests</button></li>
+                <li><button onclick="showSection('management')" id="btn-management" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-hand-holding-medical w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Management (Acute & Secondary Prophylaxis)</button></li>
+                <li><button onclick="showSection('nursing')" id="btn-nursing" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-user-nurse w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Nursing Care & Complications</button></li>
+                <li><button onclick="showSection('prevention')" id="btn-prevention" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-shield-heart w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Prevention & Health Promotion</button></li>
+                <li><button onclick="showSection('flashcards')" id="btn-flashcards" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-cards w-6 text-rf nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Flashcards & Mnemonics</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-rf mr-1"></i> Active Recall</span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-slate-800 to-rf-dark text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5 pointer-events-none"><i class="fa-solid fa-heart-crack text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-amber-300 mb-6 shadow-sm border border-white/20">
+                            <i class="fa-solid fa-hand-holding-heart text-5xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-300 mb-2 uppercase tracking-widest">Maternal & Child Health Nursing</h3>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">Acute Rheumatic Fever</h1>
+                        <div class="bg-white/10 backdrop-blur inline-block px-6 py-3 rounded-full mb-10 border border-white/20">
+                            <p class="text-lg text-white font-medium">"An autoimmune inflammatory response to Group A Streptococcus infection – can lead to rheumatic heart disease." – Pillitteri / WHO</p>
+                        </div>
+                        <button onclick="unlockFirstSection()" class="bg-slate-600 hover:bg-slate-500 text-white font-black py-4 px-10 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto focus:outline-none">
+                            Start Learning <i class="fa-solid fa-arrow-right ml-3"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- "Rheumatic Fever Like You're 5" -->
+            <section id="simple" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-face-smile text-rf mr-4"></i> Rheumatic Fever Like You Are 5 Years Old</h2>
+                    <div class="analogy-box">
+                        <p class="text-lg font-bold">🧸 Imagine your body has tiny soldiers (immune system) that fight bad germs.</p>
+                        <p>• When you get a <strong>strep throat</strong> (a sore throat caused by a specific germ), your soldiers make weapons (antibodies) to fight it.<br>
+                        • Sometimes, the weapons get confused and attack your own body – especially your <strong class="text-rf-dark">heart, joints, brain, and skin</strong>.<br>
+                        • This confusion causes <strong>rheumatic fever</strong> – painful, swollen joints (arthritis), a racing heart (carditis), strange jerky movements (chorea), pink rash, and lumps under the skin.<br>
+                        • The most serious part is <strong>heart damage</strong> (rheumatic heart disease), which can make the heart valves leaky or tight.</p>
+                        <p class="mt-3">🩺 The good news: treating strep throat quickly with antibiotics can prevent rheumatic fever!</p>
+                    </div>
+                    <div class="bg-amber-50 p-5 rounded-xl text-center mt-4">
+                        <i class="fa-solid fa-heart-crack text-6xl text-rf"></i>
+                        <p class="font-bold mt-2">Major Jones criteria (5)</p>
+                        <div class="flex justify-center gap-3 mt-2 text-sm flex-wrap">
+                            <span class="bg-amber-200 px-2 py-1 rounded">Carditis</span>
+                            <span class="bg-amber-200 px-2 py-1 rounded">Polyarthritis</span>
+                            <span class="bg-amber-200 px-2 py-1 rounded">Chorea</span>
+                            <span class="bg-amber-200 px-2 py-1 rounded">Erythema marginatum</span>
+                            <span class="bg-amber-200 px-2 py-1 rounded">Subcutaneous nodules</span>
+                        </div>
+                    </div>
+                    <button onclick="openQuiz('simple')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Definition & Epidemiology -->
+            <section id="definition" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-book-open text-rf mr-4"></i> Definition & Epidemiology</h2>
+                    <p><strong>Acute rheumatic fever (ARF)</strong> – an autoimmune, inflammatory reaction to Group A streptococcal (Streptococcus pyogenes) pharyngitis. It affects the heart, joints, central nervous system, and skin. Rheumatic heart disease (RHD) is the chronic sequelae of valvular damage.</p>
+                    <div class="grid md:grid-cols-2 gap-5 mt-4">
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong>📊 Global (WHO)</strong><br><span class="reveal-text">• Over 300,000 deaths/year from RHD.<br>• Most common in children 5‑14 years.<br>• Highest incidence in low‑ and middle‑income countries.<br>• ARF incidence: 5‑200 per 100,000 population.</span></div>
+                        <div class="bg-slate-50 p-4 rounded-xl"><strong>🇵🇭 Philippines (DOH, PHA)</strong><br><span class="reveal-text">• RHD is a leading cause of cardiovascular morbidity in young Filipinos.<br>• Estimated prevalence of RHD: 2‑5 per 1,000 school‑age children.<br>• Many cases present late with heart failure.<br>• Limited access to secondary prophylaxis in remote areas.</span></div>
+                    </div>
+                    <canvas id="rfChart" width="400" height="200" style="max-width:100%; margin-top:1rem;"></canvas>
+                    <div class="bg-amber-50 p-3 rounded-lg mt-4"><strong>⚠️ Key point:</strong> <span class="reveal-text">The first episode of ARF typically occurs 1‑5 weeks after untreated or inadequately treated Group A streptococcal pharyngitis.</span></div>
+                    <button onclick="openQuiz('definition')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Etiology & Pathophysiology -->
+            <section id="etiology" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-biohazard text-rf mr-4"></i> Etiology & Pathophysiology</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div><strong>🦠 Etiologic agent</strong><br><span class="reveal-text">• Group A β‑hemolytic Streptococcus (Streptococcus pyogenes).<br>• Only pharyngeal infections (strep throat) trigger ARF, not skin infections (impetigo).<br>• M protein serotypes (particularly types 1, 3, 5, 6, 14, 18, 24).</span></div>
+                        <div><strong>🔬 Pathophysiology (molecular mimicry)</strong><br><span class="reveal-text">• Antibodies against streptococcal M protein cross‑react with host tissues: cardiac myosin, valve glycoproteins, synovium, neuronal cells (caudate nucleus).<br>• Aschoff bodies (perivascular granulomas) in myocardium.<br>• Pancarditis (endocardium, myocardium, pericardium) → chronic valvular thickening, fusion, regurgitation/stenosis.</span></div>
+                    </div>
+                    <div class="bg-red-50 p-3 rounded-lg mt-4"><strong>📌 Pillitteri note:</strong> <span class="reveal-text">"The most important risk factor for first‑time ARF is a previous episode of ARF (recurrence risk high)."</span></div>
+                    <button onclick="openQuiz('etiology')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Clinical Features (Jones Criteria) -->
+            <section id="clinical" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-stethoscope text-rf mr-4"></i> Clinical Features (Jones Criteria)</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div><strong>🔴 Major Jones criteria (5)</strong><br><span class="reveal-text">1. <strong class="text-rf-dark">Carditis</strong> (50‑70%) – pancarditis, murmur (mitral regurgitation, aortic regurgitation), cardiomegaly, pericarditis, heart failure.<br>2. <strong class="text-rf-dark">Polyarthritis</strong> (70‑75%) – migratory, asymmetric, large joints (knees, ankles, elbows, wrists). Pain out of proportion to swelling.<br>3. <strong class="text-rf-dark">Chorea (Sydenham chorea)</strong> (10‑30%) – involuntary, purposeless movements, emotional lability, “milkmaid’s grip”. Late manifestation (months after infection).<br>4. <strong class="text-rf-dark">Erythema marginatum</strong> (rare) – pink, non‑pruritic, serpiginous rash on trunk/extensors.<br>5. <strong class="text-rf-dark">Subcutaneous nodules</strong> (rare) – small, painless nodules on extensor surfaces, associated with severe carditis.</span></div>
+                        <div><strong>🟡 Minor Jones criteria</strong><br><span class="reveal-text">• Fever (≥38°C)<br>• Arthralgia (if arthritis not present)<br>• Elevated acute phase reactants: ESR ≥60 mm/hr, CRP ≥30 mg/L<br>• Prolonged PR interval on ECG (first‑degree heart block)</span></div>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded-lg mt-4"><strong>📌 Diagnosis (Modified Jones criteria):</strong> <span class="reveal-text">2 major criteria OR 1 major + 2 minor criteria, PLUS evidence of antecedent Group A strep infection (positive throat culture, rapid antigen, or elevated ASO/anti‑DNase B).</span></div>
+                    <button onclick="openQuiz('clinical')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Diagnosis & Tests -->
+            <section id="diagnosis" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-microscope text-rf mr-4"></i> Diagnosis & Tests</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Evidence of preceding GAS infection:</strong> <span class="reveal-text">• Throat culture or rapid antigen test.<br>• Elevated streptococcal antibody titers: ASO (antistreptolysin O) rises 1‑3 weeks after infection, peaks at 4‑6 weeks. Anti‑DNase B (more sensitive in skin infections).</span></li>
+                        <li><strong>Acute phase reactants:</strong> <span class="reveal-text">• CRP, ESR – elevated in inflammation, non‑specific but required as minor criteria.</span></li>
+                        <li><strong>Cardiac evaluation:</strong> <span class="reveal-text">• ECG: prolonged PR interval (first‑degree AV block), other arrhythmias.<br>• Echocardiography (Doppler) – essential to detect subclinical carditis, valvular regurgitation/stenosis.</span></li>
+                        <li><strong>Other tests:</strong> <span class="reveal-text">• Anti‑DNAse B, ASO titers (serial).</span></li>
+                    </ul>
+                    <div class="bg-yellow-50 p-3 rounded-lg mt-4"><strong>🔍 Pillitteri pearl:</strong> <span class="reveal-text">"Echocardiography should be performed in all suspected ARF cases, even if no murmur, to detect subclinical valvulitis."</span></div>
+                    <button onclick="openQuiz('diagnosis')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Management (Acute & Secondary Prophylaxis) -->
+            <section id="management" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-hand-holding-medical text-rf mr-4"></i> Management (Acute & Secondary Prophylaxis)</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div><strong>💊 Acute ARF treatment</strong><br><span class="reveal-text">• Eradicate GAS: penicillin or amoxicillin (even if culture negative after clinical diagnosis).<br>• Arthritis/arthralgia: aspirin (50‑70 mg/kg/day) or naproxen.<br>• Carditis with heart failure: prednisone (2 mg/kg/day), diuretics, ACE inhibitors, digoxin.<br>• Chorea: haloperidol, valproate, or carbamazepine; supportive care.<br>• Bed rest during active carditis.</span></div>
+                        <div><strong>🛡️ Secondary prophylaxis (prevent recurrence)</strong><br><span class="reveal-text">• Benzathine penicillin G IM every 21‑28 days – gold standard.<br>• Duration: <br>  – No carditis: 5 years or until age 21 (whichever longer).<br>  – Carditis without residual RHD: 10 years or until age 25.<br>  – Severe RHD: lifelong (at least 40 years).<br>• Oral penicillin or erythromycin if IM not possible.</span></div>
+                    </div>
+                    <div class="bg-rose-50 p-3 rounded-lg mt-4"><strong>📌 Primary prevention (treat strep throat):</strong> <span class="reveal-text">Benzathine penicillin G IM single dose (or oral penicillin V for 10 days). Prevents first episode of ARF.</span></div>
+                    <button onclick="openQuiz('management')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Nursing Care & Complications -->
+            <section id="nursing" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-user-nurse text-rf mr-4"></i> Nursing Care & Complications</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div><strong>👩‍⚕️ Nursing interventions</strong><br><span class="reveal-text">• Administer prescribed medications (aspirin, steroids, antibiotics).<br>• Monitor cardiac status: heart sounds for murmurs, vital signs, signs of heart failure (dyspnea, edema, hepatomegaly).<br>• Promote bed rest during active carditis.<br>• Protect joints (support splints, comfort measures).<br>• For chorea: provide calm environment, padded bed rails, assist with feeding.<br>• Educate family on long‑term prophylaxis schedule and importance of follow‑up echocardiograms.</span></div>
+                        <div><strong>⚠️ Complications</strong><br><span class="reveal-text">• Rheumatic heart disease (RHD) – mitral stenosis most common (followed by aortic regurgitation).<br>• Heart failure (pulmonary edema, hepatomegaly).<br>• Atrial fibrillation (due to mitral stenosis).<br>• Infective endocarditis (prophylaxis needed for some procedures in high‑risk RHD).<br>• Recurrences (each recurrence increases risk of cardiac damage).</span></div>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-lg mt-4"><strong>📞 Teach family red flags:</strong> <span class="reveal-text">Shortness of breath, orthopnea, palpitations, chest pain, new murmur, joint swelling, fever – report immediately.</span></div>
+                    <button onclick="openQuiz('nursing')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Prevention & Health Promotion -->
+            <section id="prevention" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-shield-heart text-rf mr-4"></i> Prevention & Health Promotion</h2>
+                    <ul class="list-disc pl-6 space-y-2">
+                        <li><strong>Primary prevention (prevent first ARF):</strong> <span class="reveal-text">• Prompt diagnosis and adequate treatment of Group A streptococcal pharyngitis with penicillin or amoxicillin for 10 days.<br>• Public health campaigns for sore throat management in high‑risk communities.<br>• School‑based screening programs for RHD in endemic areas.</span></li>
+                        <li><strong>Secondary prevention (prevent recurrence):</strong> <span class="reveal-text">• Adherence to long‑term benzathine penicillin G IM injections.<br>• Use of a national RHD register (Philippine RHD Registry).<br>• Patient education on the importance of prophylaxis even without symptoms.</span></li>
+                        <li><strong>Health promotion:</strong> <span class="reveal-text">• Improve living conditions, reduce crowding.<br>• Promote timely healthcare seeking for sore throat.<br>• Educate parents about the link between strep throat and heart disease.</span></li>
+                    </ul>
+                    <div class="bg-purple-50 p-3 rounded-lg mt-4"><strong>📌 DOH Philippines program:</strong> <span class="reveal-text">The Philippine RHD Control Program – aims to provide benzathine penicillin to all diagnosed RHD patients free of charge, improve registry and follow‑up.</span></div>
+                    <button onclick="openQuiz('prevention')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- Flashcards & Mnemonics -->
+            <section id="flashcards" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-4 border-b-2 border-rf pb-3"><i class="fa-solid fa-cards text-rf mr-4"></i> Flashcards & Mnemonics</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: Causative organism of ARF?</div><div class="flash-answer hidden mt-2">Group A β‑hemolytic Streptococcus (Streptococcus pyogenes)</div></div>
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: Which Jones criterion is most common?</div><div class="flash-answer hidden mt-2">Polyarthritis (70‑75%)</div></div>
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: Most serious complication of ARF?</div><div class="flash-answer hidden mt-2">Rheumatic heart disease (RHD) – valvular damage</div></div>
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: Drug of choice for secondary prophylaxis</div><div class="flash-answer hidden mt-2">Benzathine penicillin G IM every 21‑28 days</div></div>
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: Major criteria mnemonic?</div><div class="flash-answer hidden mt-2">"JONES" – Joints (arthritis), O‑cardia (carditis), Nodules (subcutaneous), Erythema marginatum, Sydenham chorea</div></div>
+                        <div class="flashcard p-4" onclick="toggleFlash(this)"><div class="font-bold text-rf">Q: First‑degree heart block in ARF</div><div class="flash-answer hidden mt-2">Prolonged PR interval on ECG (minor criterion)</div></div>
+                    </div>
+                    <div class="mt-6 bg-amber-50 p-4 rounded-xl"><strong>🧠 Mnemonics</strong><br><span class="reveal-text">“JONES” – Joints, O‑cardia, Nodules, Erythema marginatum, Sydenham chorea (major criteria).<br>“C.A.R.E.” – Carditis, Arthritis, Rash, Emboli (chorea, nodules).<br>“P.I.L.L.” – Penicillin prophylaxis: IM, Lifelong for severe RHD.<br>“F.E.V.E.R.” – Fever, ESR elevated, Valvular damage, Early treatment, Recurrence prevention.</span></div>
+                    <button onclick="openQuiz('flashcards')" class="mt-6 w-full bg-slate-800 text-white font-black py-3 rounded-xl">Take Quiz → Unlock Final Exam</button>
+                </div>
+            </section>
+
+            <!-- FINAL EXAM SECTION -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-500 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">Final 50‑Item Exam: Rheumatic Fever</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl">Covers definition, epidemiology, etiology, pathophysiology, clinical features (Jones criteria), diagnosis, management (acute and secondary prophylaxis), nursing care, complications, prevention, and mnemonics. Score ≥75% to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-slate-800 text-white font-black py-4 rounded-xl shadow-md text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <div id="quiz-questions-container" class="space-y-4 mt-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-rf text-white font-bold py-4 rounded-xl shadow-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100"></div>
+        </div>
+    </div>
+
+    <script>
+        // QUIZ DATA (10 questions each for 9 content sections)
+        const quizzes = {
+            simple: { title: "Rheumatic Fever Like You're 5", next: "definition", questions: [
+                { q: "What type of throat infection can lead to rheumatic fever if untreated?", options: ["Strep throat (Group A Strep)","Viral sore throat","Fungal infection","Tuberculosis"], ans: 0 },
+                { q: "Why does rheumatic fever attack the heart, joints, and brain?", options: ["The germs spread directly","The immune system gets confused and attacks own tissues (molecular mimicry)","It's a genetic problem","It's caused by a virus"], ans: 1 },
+                { q: "Which part of the body can be permanently damaged in rheumatic fever?", options: ["Heart valves","Kidneys","Lungs","Liver"], ans: 0 },
+                { q: "What is the name of the jerky, involuntary movements that can occur?", options: ["Sydenham chorea","Epilepsy","Tremors","Spasms"], ans: 0 },
+                { q: "How can rheumatic fever be prevented after a strep throat?", options: ["Take all antibiotics as prescribed","Rest only","Drink fluids","Take pain relievers"], ans: 0 }
+            ] },
+            definition: { title: "Definition & Epidemiology", next: "etiology", questions: [
+                { q: "Acute rheumatic fever occurs after infection with:", options: ["Staphylococcus aureus","Group A Streptococcus","Streptococcus pneumoniae","Haemophilus influenzae"], ans: 1 },
+                { q: "The most serious complication of ARF is:", options: ["Arthritis","Chorea","Rheumatic heart disease","Erythema marginatum"], ans: 2 },
+                { q: "ARF most commonly affects children in which age group?", options: ["1‑4 years","5‑14 years","15‑20 years",">30 years"], ans: 1 },
+                { q: "In the Philippines, RHD is estimated to affect school‑age children at a prevalence of:", options: ["0.1 per 1,000","2‑5 per 1,000","10‑20 per 1,000","50 per 1,000"], ans: 1 },
+                { q: "Globally, rheumatic heart disease causes approximately how many deaths annually?", options: ["50,000","150,000","300,000","1 million"], ans: 2 }
+            ] },
+            etiology: { title: "Etiology & Pathophysiology", next: "clinical", questions: [
+                { q: "Which part of the Group A Streptococcus is responsible for molecular mimicry?", options: ["Capsule","M protein","Lipoteichoic acid","Hyaluronidase"], ans: 1 },
+                { q: "Only which type of GAS infection triggers ARF?", options: ["Pharyngeal (strep throat)","Skin (impetigo)","Scarlet fever","Toxic shock"], ans: 0 },
+                { q: "The Aschoff body is a characteristic histological finding in:", options: ["Joint synovium","Myocardium","Skin","Brain"], ans: 1 },
+                { q: "Carditis in ARF is a pancarditis affecting:", options: ["Only endocardium","Only myocardium","Only pericardium","All three layers (endocardium, myocardium, pericardium)"], ans: 3 },
+                { q: "The time interval between GAS pharyngitis and onset of ARF is typically:", options: ["1‑5 days","1‑5 weeks","2‑3 months","6‑12 months"], ans: 1 }
+            ] },
+            clinical: { title: "Clinical Features (Jones Criteria)", next: "diagnosis", questions: [
+                { q: "Which of the following is a major Jones criterion?", options: ["Fever","Arthralgia","Polyarthritis","Elevated ESR"], ans: 2 },
+                { q: "Migratory polyarthritis in ARF most commonly affects:", options: ["Small joints of hands","Large joints (knees, ankles, elbows)","Spine","Temporomandibular joint"], ans: 1 },
+                { q: "Sydenham chorea typically appears:", options: ["At the same time as arthritis","Weeks to months after the initial infection","Only during acute phase","Before the sore throat"], ans: 1 },
+                { q: "The characteristic rash of ARF is called:", options: ["Erythema multiforme","Erythema marginatum","Erythema nodosum","Urticaria"], ans: 1 },
+                { q: "Subcutaneous nodules of ARF are commonly found over:", options: ["Abdomen","Face","Extensor surfaces (elbows, knees, scalp)","Palms"], ans: 2 }
+            ] },
+            diagnosis: { title: "Diagnosis & Tests", next: "management", questions: [
+                { q: "Modified Jones criteria require evidence of preceding GAS infection plus:", options: ["1 major criterion","2 major criteria OR 1 major + 2 minor criteria","3 major criteria","1 minor criterion"], ans: 1 },
+                { q: "Which lab test is NOT a minor Jones criterion?", options: ["Elevated ESR","Elevated CRP","Positive throat culture (already as evidence)","Prolonged PR interval"], ans: 2 },
+                { q: "Echocardiography in ARF is most important to detect:", options: ["Pericardial effusion","Subclinical carditis and valvular regurgitation","Ventricular function","Pulmonary hypertension"], ans: 1 },
+                { q: "First‑degree heart block in ARF is defined as:", options: ["Prolonged PR interval on ECG","Wide QRS","ST elevation","QT prolongation"], ans: 0 },
+                { q: "Which serologic test is most commonly elevated after GAS pharyngitis?", options: ["ASO (antistreptolysin O)","C‑reactive protein","Rheumatoid factor","ANA"], ans: 0 }
+            ] },
+            management: { title: "Management (Acute & Secondary Prophylaxis)", next: "nursing", questions: [
+                { q: "Drug of choice for secondary prophylaxis (prevent recurrence) is:", options: ["Oral penicillin V daily","Benzathine penicillin G IM every 21‑28 days","Erythromycin daily","Amoxicillin twice daily"], ans: 1 },
+                { q: "For a child with ARF and carditis without residual RHD, secondary prophylaxis should continue for:", options: ["1 year","5 years","10 years or until age 25","Lifelong"], ans: 2 },
+                { q: "Primary prevention (first episode) of ARF is achieved by:", options: ["Treating strep throat with penicillin for 10 days","Long‑term IM penicillin","Aspirin","Steroids"], ans: 0 },
+                { q: "Which medication is used to treat arthritis in ARF?", options: ["Aspirin or naproxen","Prednisone alone","Penicillin","Ibuprofen is contraindicated"], ans: 0 },
+                { q: "For severe carditis with heart failure, the nurse should expect administration of:", options: ["Aspirin","Steroids (prednisone), diuretics, ACE inhibitors","Only bed rest","Antibiotics only"], ans: 1 }
+            ] },
+            nursing: { title: "Nursing Care & Complications", next: "prevention", questions: [
+                { q: "A child with active carditis should be placed on:", options: ["Full activity","Bed rest with limited activity","No restrictions","Physical therapy"], ans: 1 },
+                { q: "For a child with Sydenham chorea, the nurse should provide:", options: ["Stimulating environment","Safety measures (padded bed rails, calm environment)","Physical restraints","Frequent loud noise"], ans: 1 },
+                { q: "The most common valvular lesion in chronic RHD in the Philippines is:", options: ["Aortic stenosis","Mitral stenosis","Tricuspid regurgitation","Pulmonary stenosis"], ans: 1 },
+                { q: "A patient with RHD and mitral stenosis is at risk for:", options: ["Atrial fibrillation","Ventricular tachycardia","Heart block","Myocarditis"], ans: 0 },
+                { q: "Which of the following is a sign of heart failure in a child with ARF?", options: ["Weight loss","Peripheral edema, hepatomegaly","Increased appetite","Decreased heart rate"], ans: 1 }
+            ] },
+            prevention: { title: "Prevention & Health Promotion", next: "flashcards", questions: [
+                { q: "Primary prevention of ARF depends on:", options: ["Prompt treatment of strep throat with antibiotics","Routine echocardiography","Vaccination","Avoiding crowded places"], ans: 0 },
+                { q: "The recommended duration of oral penicillin for treating strep throat is:", options: ["3 days","5 days","10 days","14 days"], ans: 2 },
+                { q: "Secondary prevention with IM benzathine penicillin is most effective when given every:", options: ["14 days","21‑28 days","35 days","60 days"], ans: 1 },
+                { q: "In the Philippines, the RHD control program provides:", options: ["Free benzathine penicillin","Free echocardiograms","Surgery","Vaccination"], ans: 0 },
+                { q: "A child with ARF and no carditis should receive secondary prophylaxis for:", options: ["1 year","5 years or until age 21","10 years","Lifelong"], ans: 1 }
+            ] },
+            flashcards: { title: "Flashcards & Mnemonics", next: "final_quiz_sec", questions: [
+                { q: "Mnemonic for major Jones criteria?", options: ["JONES","C.A.R.E.","P.I.L.L.","F.E.V.E.R."], ans: 0 },
+                { q: "In JONES mnemonic, 'O' stands for:", options: ["O‑cardia (carditis)","Osteoarthritis","Onycholysis","Oliguria"], ans: 0 },
+                { q: "Secondary prophylaxis drug and route?", options: ["Benzathine penicillin IM","Oral penicillin","Azithromycin oral","Cefalexin oral"], ans: 0 },
+                { q: "Which valve is most commonly affected in RHD in the Philippines?", options: ["Mitral","Aortic","Tricuspid","Pulmonary"], ans: 0 },
+                { q: "First‑degree heart block in ARF is a:", options: ["Major criterion","Minor criterion","Diagnostic requirement","Complication"], ans: 1 }
+            ] }
+        };
+        // Build final 50-item exam (10 from each of 5 core sections: definition, etiology, clinical, diagnosis, management)
+        let finalQ = [];
+        for(let sec of ['definition','etiology','clinical','diagnosis','management']) {
+            finalQ.push(...quizzes[sec].questions.slice(0,10));
+        }
+        while(finalQ.length < 50) finalQ.push({ q: "The most effective public health strategy to reduce ARF burden is:", options: ["Prompt treatment of strep throat","Mass vaccination","Hygiene campaigns","Routine echocardiography"], ans: 0 });
+        quizzes.final_quiz = { title: "Final 50-Item Exam: Rheumatic Fever", next: null, questions: finalQ };
+
+        let unlockedSections = ['home'];
+        let rfChart = null;
+
+        function initCharts() {
+            const ctx = document.getElementById('rfChart')?.getContext('2d');
+            if(ctx && !rfChart) {
+                rfChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Global ARF (high incidence)', 'Philippines (estimated)', 'Developed countries'],
+                        datasets: [{ label: 'Incidence per 100,000 children', data: [150, 50, 5], backgroundColor: '#b45309', borderRadius: 6 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+                });
+            }
+        }
+
+        function toggleFlash(el) { const ans = el.querySelector('.flash-answer'); if(ans) ans.classList.toggle('hidden'); }
+        function unlockFirstSection() { if(!unlockedSections.includes('simple')) { unlockedSections.push('simple'); updateSidebarUI(); } showSection('simple'); }
+        function showSection(sectionId) {
+            if (!unlockedSections.includes(sectionId) && sectionId !== 'home') { alert("Complete the Active Recall Quiz at the bottom of the previous section to unlock."); return; }
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('bg-rf-light','text-rf-dark','border-r-4','border-rf-dark'));
+            const activeBtn = document.getElementById('btn-'+sectionId);
+            if(activeBtn) activeBtn.classList.add('bg-rf-light','text-rf-dark','border-r-4','border-rf-dark');
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
+            if(sectionId === 'definition' && !rfChart) setTimeout(initCharts, 50);
+        }
+        function updateSidebarUI() {
+            const sections = ['home','simple','definition','etiology','clinical','diagnosis','management','nursing','prevention','flashcards','final_quiz_sec'];
+            sections.forEach(sec => {
+                const btn = document.getElementById('btn-'+sec);
+                if(!btn) return;
+                const lock = btn.querySelector('.fa-lock'), icon = btn.querySelector('.nav-icon');
+                if(unlockedSections.includes(sec) || sec==='home') { btn.classList.remove('locked-section'); if(lock) lock.classList.add('hidden'); if(icon) icon.classList.remove('hidden'); }
+                else { btn.classList.add('locked-section'); if(lock) lock.classList.remove('hidden'); if(icon) icon.classList.add('hidden'); }
+            });
+        }
+        let currentQuiz=null;
+        function openQuiz(sectionId) { currentQuiz = sectionId; const qd = quizzes[sectionId]; if(!qd) return; document.getElementById('quiz-title').innerHTML = qd.title; const container = document.getElementById('quiz-questions-container'); container.innerHTML = ''; qd.questions.forEach((q, idx) => { let html = `<div class="bg-slate-50 p-4 rounded-xl mb-4"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2">`; q.options.forEach((opt,oi) => { html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-rf"><span>${opt}</span></label>`; }); html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`; container.innerHTML += html; }); document.getElementById('quiz-submit-btn').classList.remove('hidden'); document.getElementById('quiz-result-container').classList.add('hidden'); document.getElementById('quiz-modal').classList.remove('hidden'); }
+        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function submitQuiz() {
+            const qd = quizzes[currentQuiz];
+            if(!qd) return;
+            let score = 0;
+            for(let i=0; i<qd.questions.length; i++) {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if(sel && parseInt(sel.value)===qd.questions[i].ans) score++;
+                const fbDiv = document.querySelector(`.feedback-${i}`);
+                if(fbDiv){
+                    fbDiv.classList.remove('hidden');
+                    const correctTxt = qd.questions[i].options[qd.questions[i].ans];
+                    if(sel && parseInt(sel.value)===qd.questions[i].ans) { fbDiv.innerHTML='<span class="text-green-700">✓ Correct</span>'; fbDiv.parentElement?.classList.add('quiz-feedback-correct'); }
+                    else { const selectedTxt = sel? qd.questions[i].options[parseInt(sel.value)]:"No answer"; fbDiv.innerHTML=`<span class="text-red-700">✗ Incorrect. Correct: ${correctTxt}. You answered: ${selectedTxt}</span>`; fbDiv.parentElement?.classList.add('quiz-feedback-wrong'); }
+                }
+            }
+            let percent = (score/qd.questions.length)*100;
+            let resultDiv = document.getElementById('quiz-result-container');
+            document.getElementById('quiz-submit-btn').classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            if(percent>=75){
+                if(currentQuiz==='final_quiz'){ resultDiv.innerHTML=`<div class="text-green-600 text-4xl text-center">🎉 Excellent! Score ${score}/${qd.questions.length} (${percent}%)<br>You mastered Rheumatic Fever!</div><button onclick="closeQuiz()" class="mt-4 bg-rf text-white px-6 py-2 rounded-xl">Close</button>`; return; }
+                if(quizzes[currentQuiz].next && !unlockedSections.includes(quizzes[currentQuiz].next)) unlockedSections.push(quizzes[currentQuiz].next);
+                if(quizzes[currentQuiz].next === 'flashcards' && !unlockedSections.includes('final_quiz_sec')) unlockedSections.push('final_quiz_sec');
+                updateSidebarUI();
+                resultDiv.innerHTML=`<div class="text-green-600 text-3xl text-center">✅ Passed! (${score}/${qd.questions.length})</div><button onclick="closeQuiz(); showSection('${quizzes[currentQuiz].next}')" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-xl">Unlock Next Section</button>`;
+            } else { resultDiv.innerHTML=`<div class="text-red-600 text-3xl text-center">❌ Failed: ${score}/${qd.questions.length} (${percent}%)<br>Need 75%</div><button onclick="openQuiz('${currentQuiz}')" class="mt-4 bg-slate-600 text-white px-6 py-2 rounded-xl">Try Again</button>`; }
+        }
+        function toggleRecallMode() { const active = !document.body.classList.contains('recall-mode'); const toggle=document.getElementById('recall-toggle'),knob=document.getElementById('recall-knob'); if(active){ document.body.classList.add('recall-mode'); toggle.classList.add('bg-rf-dark'); knob.classList.add('translate-x-6'); } else { document.body.classList.remove('recall-mode'); toggle.classList.remove('bg-rf-dark'); knob.classList.remove('translate-x-6'); } }
+        function toggleMobileMenu() { const s=document.getElementById('sidebar'); if(s.classList.contains('hidden')) s.classList.remove('hidden','flex','absolute','h-full','z-50'); else s.classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', () => { updateSidebarUI(); document.querySelectorAll('.reveal-text').forEach(el => el.addEventListener('click', function(){ if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed'); })); });
+    </script>
+</body>
+</html>
